@@ -25,5 +25,5 @@ Open a brower as server will be started locally on your machine on port No. 4000
 *Hide Section : The list of completed and deleted todos can be hidden and as well as shown .
 
 The "Hide Completed Items" link hides the "Completed Todos" section. Similarly the "Hide Deleted" Items" link hides the "Deleted Todos" section.
-Features Not Build
+## Features Not Build
  1)checkboxes UI is not as per mockup  2)slightly UI changes than given mockup.
