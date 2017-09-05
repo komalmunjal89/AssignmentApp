@@ -1,235 +1,265 @@
 const RESPONSE_DONE = 4;
 const STATUS_OK = 200;
-const ACTIVE_TODO_ID = "todo_list_div_active"
-const COMPELTE_TODO_ID = "todo_list_div_complete"
-const DELETE_TODO_ID = "todo_list_div_delete"
-const TODO_ID_NEW = "new_todo_input"
-const STATUS_ACTIVE = "ACTIVE"
-const STATUS_COMPLETE = "COMPLETE"
-const STATUS_DELETE = "DELETED"
+const TODO_LIST_ID_ACTIVE = "active";
+const TODO_LIST_ID_COMPLETE = "complete";
+const TODO_LIST_ID_DELETE = "delete";
+const NEW_TODO_INPUT_ID = "new_todo_input";
+const COMPLETE_VISIBLE_ID = "visible_complete_anchor";
+const COMPLETE_HIDDEN_ID = "hidden_complete_anchor";
+const DELETE_VISIBLE_ID = "visible_delete_anchor";
+const DELETE_HIDDEN_ID = "hidden_delete_anchor";
+
+var table1 = document.createElement("table");
+var table2 = document.createElement("table");
+var table3 = document.createElement("table");
 
 window.onload = getTodosAJAX();
 
-function removeChildNode(parent) {
-    while(parent.hasChildNodes())
-    {
-        parent.removeChild(parent.lastChild);
-    }
-}
-
-function addTodoElements(todo_data_json) {
-
+function activeElement(id, todo_data_json) {
     var todos = JSON.parse(todo_data_json);
-    var complete_parent = document.getElementById(COMPELTE_TODO_ID);
-    var active_parent = document.getElementById(ACTIVE_TODO_ID);
-    var delete_parent = document.getElementById(DELETE_TODO_ID);
+    var parent = document.getElementById(id);
+    parent.innerHTML = "";
 
-    removeChildNode(active_parent)
-    removeChildNode(complete_parent);
-    removeChildNode(delete_parent);
-
-    for(_id in todos)
-    {
-        if(todos[_id].status === STATUS_ACTIVE)
-        {
-            active_parent.appendChild(activeCreateElement(_id,todos[_id]));
-        }
-        if(todos[_id].status === STATUS_COMPLETE)
-        {
-            complete_parent.appendChild(completeCreateElement(_id,todos[_id]));
-        }
-        if(todos[_id].status === STATUS_DELETE)
-        {
-            delete_parent.appendChild(deleteCreateElement(_id,todos[_id]));
-        }
-
-
+    if (parent) {
+        Object.keys(todos).forEach( function (key) {
+            if (todos[key].status == "ACTIVE") {
+                parent.appendChild(activeTodoElement(key, todos[key]));
+            }
+        });
     }
-
 }
 
-function activeCreateElement(_id,todo_object) {
-    var todo_element = document.createElement("div");
-    todo_element.setAttribute("data-id",_id);
+function completeElement(id, todo_data_json) {
+    var todos = JSON.parse(todo_data_json);
+    var parent = document.getElementById(id);
+    parent.innerHTML = "";
 
-    todo_element.appendChild(createCheckbox(_id, todo_object));
-    todo_element.appendChild(createTitle(todo_object));
-    todo_element.appendChild(createDeleteX(_id));
-    return todo_element;
-}
-function completeCreateElement(_id,todo_object) {
-    var todo_element = document.createElement("div");
-    todo_element.setAttribute("data-id", _id);
-
-    todo_element.appendChild(createCheckbox(_id, todo_object));
-    todo_element.appendChild(createTitle(todo_object));
-    todo_element.appendChild(createDeleteX(_id));
-    return todo_element;
-}
-function deleteCreateElement(_id,todo_object) {
-    var todo_element = document.createElement("div");
-    todo_element.setAttribute("data-id", _id);
-    todo_element.appendChild(createTitle(todo_object));
-    return todo_element;
-}
-
-function createCheckbox(_id,todo_object) {
-    var _div = document.createElement("div");
-    var checkbox = document.createElement("input");
-    _div.setAttribute("class", "col-xs-2");
-    _div.setAttribute("align", "right");
-    checkbox.setAttribute("type", "checkbox");
-    checkbox.setAttribute("onchange", "getCompleteTODOAJAX(" + _id + ")");
-    if (todo_object.status === STATUS_COMPLETE ) {
-        checkbox.checked = true;
-        checkbox.setAttribute('onchange', "getActiveTODOAJAX(" + _id + ")");
+    if (parent) {
+        Object.keys(todos).forEach( function (key) {
+            if (todos[key].status == "COMPLETE") {
+                parent.appendChild(completeTodoElement(key, todos[key]));
+            }
+        });
     }
-    _div.appendChild(checkbox);
-    return _div;
+}
+
+function deleteElement(id, todo_data_json) {
+    var todos = JSON.parse(todo_data_json);
+    var parent = document.getElementById(id);
+    parent.innerHTML = "";
+
+    if (parent) {
+        Object.keys(todos).forEach( function (key) {
+            if (todos[key].status == "DELETED") {
+                parent.appendChild(deleteTodoElement(key, todos[key]));
+            }
+        });
+    }
+}
+
+function activeTodoElement(id, todo_object) {
+    table1.innerHTML = "";
+    var row = table1.insertRow();
+    var cell0 = row.insertCell(0);
+    var cell1 = row.insertCell(1);
+    var cell2 = row.insertCell(2);
+
+    cell1.innerText = todo_object.title;
+    cell1.setAttribute("data-id", id);
+    cell1.setAttribute("class", "todoStatus" + todo_object.status);
+    cell0.appendChild(createCompleteButton(id));
+    cell2.appendChild(createDeleteButton(id));
+    return row;
+}
+
+function completeTodoElement(id, todo_object) {
+
+    table2.innerHTML = "";
+    var row = table2.insertRow();
+    var cell0 = row.insertCell(0);
+    var cell1 = row.insertCell(1);
+    var cell2 = row.insertCell(2);
+
+    cell1.innerText = todo_object.title;
+    cell1.setAttribute("data-id", id);
+    cell1.setAttribute("class", "todoStatus" + todo_object.status);
+
+    cell0.innerHTML = '<input type="checkbox" checked="true">';
+    cell0.setAttribute("onclick", "activeTodoAJAX(" + id + ")");
+    cell0.setAttribute("class", "breathHorizontal");
+
+    cell2.appendChild(createDeleteButton(id));
+
+    return row;
 
 }
 
+function deleteTodoElement(id, todo_object) {
+    table3.innerHTML = "";
+    var row = table3.insertRow();
+    var cell0 = row.insertCell(0);
+    var cell1 = row.insertCell(1);
+    var cell2 = row.insertCell(2);
 
-function createTitle(todo_object) {
-    var todo_text = document.createElement("div");
-    todo_text.setAttribute("class", "col-xs-8 todoStatus" + todo_object.status);
-    todo_text.innerText = todo_object.title;
-    return todo_text;
-}
-function createDeleteX(_id) {
-    var x_div = document.createElement("div");
-    //x_div.setAttribute("class", "col-xs-1");
-    var delete_x = document.createElement("button");
-    delete_x.setAttribute("class", "btn btn-link");
-    delete_x.innerText = "X";
-    delete_x.setAttribute("onclick", "getDeletedTODOAJAX(" + _id + ")");
-    x_div.appendChild(delete_x);
-    return x_div;
+    cell1.innerText = todo_object.title;
+    cell1.setAttribute("data-id", id);
+    cell1.setAttribute("class", "todoStatus" + todo_object.status);
+    return row;
 }
 
-function completeVisibilityToggle() {
-    var content = document.getElementById(COMPELTE_TODO_ID);
-    if(content.style.display == 'block')
-        content.style.display = 'none';
-    else
-        content.style.display = 'block';
-}
-function deleteVisibilityToggle() {
-    var content = document.getElementById(DELETE_TODO_ID);
-    if(content.style.display == 'block')
-        content.style.display = 'none';
-    else
-        content.style.display = 'block';
+function createCompleteButton(id) {
+    var complete_button = document.createElement("checkbox");
+    complete_button.innerHTML = '<input type="checkbox">';
+    complete_button.setAttribute("onclick", "completeTodoAJAX(" + id + ")");
+    complete_button.setAttribute("class", "breathHorizontal");
+    return complete_button;
 }
 
+function createDeleteButton(id) {
+    var delete_button = document.createElement("img");
+    delete_button.style.height = "10px";
+    delete_button.style.width = "10px";
+    delete_button.setAttribute('src', '/image/cross.jpg');
+    delete_button.setAttribute("onclick", "deleteTodoAJAX(" + id + ")");
+    delete_button.setAttribute("class", "breathHorizontal");
+    return delete_button;
+}
 
-
-
-// list all the todos using get method
 function getTodosAJAX() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/todos");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === RESPONSE_DONE) {
-            if (xhr.status === STATUS_OK) {
-                addTodoElements(xhr.responseText);
-            } else {
-                var resp = JSON.parse(xhr.responseText);
-                alert(resp.error);
-            }
-        }
-    };
-    xhr.send(data = null);
-}
+    xhr.open("GET", "/api/todos", true);
 
-
-
-function addTodoAJAX() {
-    var title = document.getElementById(TODO_ID_NEW).value;
-    console.log(title);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST","/api/todos",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var body_data = "todo_title="+encodeURI(title) ;
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState == RESPONSE_DONE){
-            if(xhr.status ==  STATUS_OK)
-            {
-                addTodoElements(xhr.responseText);
-            }
-            else{
-                var resp = JSON.parse(xhr.responseText);
-                alert(resp.error);
-            }
-        }
-
-    }
-    xhr.send(body_data);
-}
-
-function getDeletedTODOAJAX(id) {
-    var xhr = new XMLHttpRequest();
-//xhr is a JS object for making requests to server
-    xhr.open("PUT", "/api/todos/" + id);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var body_data = "todo_status="+encodeURI(STATUS_DELETE);
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState == RESPONSE_DONE){
-            if(xhr.status ==  STATUS_OK)
-            {
-
-                addTodoElements(xhr.responseText);
-            }
-            else
-            {
-                console.log(xhr.responseText);
-            }
-        }
-    }
-    xhr.send(body_data);
-}
-
-function getActiveTODOAJAX(id) {
-    var xhr = new XMLHttpRequest();
-//xhr is a JS object for making requests to server
-    xhr.open("PUT","api/todos/"+id);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var body_data = "todo_status="+(STATUS_ACTIVE);
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState == RESPONSE_DONE){
-            if(xhr.status ==  STATUS_OK)
-            {
-
-                addTodoElements(xhr.responseText); //sending responses
-                console.log(xhr.responseText);
-
-            }
-            else
-            {
-                console.log(xhr.responseText);
-            }
-        }
-    }
-    xhr.send(body_data);
-}
-
-function getCompleteTODOAJAX(id) {
-    var xhr = new XMLHttpRequest();
-//xhr is a JS object for making requests to server via JS
-    xhr.open("PUT", "api/todos/" + id, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    var body_data = "todo_status=COMPLETE";
     xhr.onreadystatechange = function () {
         if (xhr.readyState == RESPONSE_DONE) {
             if (xhr.status == STATUS_OK) {
+                console.log(xhr.responseText);
+                activeElement(TODO_LIST_ID_ACTIVE, xhr.responseText);
+                completeElement(TODO_LIST_ID_COMPLETE, xhr.responseText);
+                deleteElement(TODO_LIST_ID_DELETE, xhr.responseText);
+            }
+        }
+    };
+    xhr.send(data=null);
+}
 
-                addTodoElements(xhr.responseText); //sending responses that was requested
+function addTodoAJAX() {
+    var title = document.getElementById(NEW_TODO_INPUT_ID).value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/todos", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    var data = "todo_title=" + encodeURI(title);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == RESPONSE_DONE) {
+            if (xhr.status == STATUS_OK) {
+                activeElement(TODO_LIST_ID_ACTIVE, xhr.responseText);
+                completeElement(TODO_LIST_ID_COMPLETE, xhr.responseText);
+                deleteElement(TODO_LIST_ID_DELETE, xhr.responseText);
             }
             else {
                 console.log(xhr.responseText);
             }
         }
-    }
-    xhr.send(body_data);
-
+    };
+    xhr.send(data);
 }
+
+function activeTodoAJAX(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", "/api/todos/" + id, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    data = "todo_status=ACTIVE";
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == RESPONSE_DONE) {
+            if (xhr.status == STATUS_OK) {
+                activeElement(TODO_LIST_ID_ACTIVE, xhr.responseText);
+                completeElement(TODO_LIST_ID_COMPLETE, xhr.responseText);
+                deleteElement(TODO_LIST_ID_DELETE, xhr.responseText);
+            }
+            else {
+                console.log(xhr.responseText);
+            }
+        }
+    };
+    xhr.send(data);
+}
+
+
+function completeTodoAJAX(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", "/api/todos/" + id, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    data = "todo_status=COMPLETE";
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == RESPONSE_DONE) {
+            if (xhr.status == STATUS_OK) {
+                activeElement(TODO_LIST_ID_ACTIVE, xhr.responseText);
+                completeElement(TODO_LIST_ID_COMPLETE, xhr.responseText);
+                deleteElement(TODO_LIST_ID_DELETE, xhr.responseText);
+            }
+            else {
+                console.log(xhr.responseText);
+            }
+        }
+    };
+    xhr.send(data);
+}
+
+function deleteTodoAJAX(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE", "/api/todos/" + id, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    data = "todo_status=DELETED";
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == RESPONSE_DONE) {
+            if (xhr.status == STATUS_OK) {
+                activeElement(TODO_LIST_ID_ACTIVE, xhr.responseText);
+                completeElement(TODO_LIST_ID_COMPLETE, xhr.responseText);
+                deleteElement(TODO_LIST_ID_DELETE, xhr.responseText);
+            }
+            else {
+                console.log(xhr.responseText);
+            }
+        }
+    };
+    xhr.send(data);
+}
+
+function hideComplete() {
+    var complete_visible_id = document.getElementById(TODO_LIST_ID_COMPLETE);
+    var anchor_visible_id = document.getElementById(COMPLETE_VISIBLE_ID);
+    var anchor_hidden_id = document.getElementById(COMPLETE_HIDDEN_ID);
+    complete_visible_id.style.display = "none";
+    anchor_visible_id.style.display = "none";
+    anchor_hidden_id.style.display = "table";
+}
+function showComplete() {
+    var complete_visible_id = document.getElementById(TODO_LIST_ID_COMPLETE);
+    var anchor_visible_id = document.getElementById(COMPLETE_VISIBLE_ID);
+    var anchor_hidden_id = document.getElementById(COMPLETE_HIDDEN_ID);
+    complete_visible_id.style.display = "table";
+    anchor_visible_id.style.display = "table";
+    anchor_hidden_id.style.display = "none";
+}
+function hideDelete() {
+    var delete_visible_id = document.getElementById(TODO_LIST_ID_DELETE);
+    var anchor_visible_id = document.getElementById(DELETE_VISIBLE_ID);
+    var anchor_hidden_id = document.getElementById(DELETE_HIDDEN_ID);
+    delete_visible_id.style.display = "none";
+    anchor_visible_id.style.display = "none";
+    anchor_hidden_id.style.display = "table";
+}
+function showDelete() {
+    var delete_visible_id = document.getElementById(TODO_LIST_ID_DELETE);
+    var anchor_visible_id = document.getElementById(DELETE_VISIBLE_ID);
+    var anchor_hidden_id = document.getElementById(DELETE_HIDDEN_ID);
+    delete_visible_id.style.display = "table";
+    anchor_visible_id.style.display = "table";
+    anchor_hidden_id.style.display = "none";
+}
+

@@ -1,48 +1,88 @@
-.btn-group button {
+div{
+    font-family: "Arial"
+}
+
+a{
+    float:right;
+}
+h1{
+    font-size:60px;
+    text-align:center;
+    margin:0;
+    padding:20px 40px 10px 10px;
+    color:black;
+    background-color: #fcffd3;
+
+
+}
+h4{
+
+    color: rgba(0, 0, 0, 0.25);
+}
+h3{
+
+
+}
+
+.container1
+{
+    text-align:left;
+    margin:20px;
+    padding:20px 0;
+    font-size:20px;
+
+}
+.container2
+{
+    text-align:left;
+    margin:20px;
+    padding:20px 0;
+    font-size:20px;
+
+}
+
+
+
+.container3
+{
+    text-align:left;
+    margin:20px;
+    padding:20px 0;
+    font-size:20px;
+
+}
+
+.breathVertical {
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+
+.breathHorizontal {
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.todoStatusACTIVE {
+
+    color : blue;
+}
+
+
+.todoStatusCOMPLETE{
+    color : green;
+    text-decoration : line-through;
+}
+
+.todoStatusDELETED {
+    color : red;
+    text-decoration : line-through;
+
+}
+.btn-xs {
     background-color: #81c0ff;
     border: 1px #44b3ff;
     color: black;
     padding: 5px 10px;
     cursor: pointer;
-    float: left;
-
-}
-
-div.heading{
-    align-content: center;
-    text-align: center;
-    background: #faffc2;
-}
-
-
-.breathTop {
-    margin-top: 50px;
-}
-
-.borderBottom {
-    border: solid #ffffff;
-    border-bottom-color: #000000;
-}
-
-.breathHorizontal {
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.breathVertical {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-div.todoStatusACTIVE{
-    color : blue
-}
-
-div.todoStatusCOMPLETE{
-    color : green ;
-    text-decoration : line-through
-}
-
-div.todoStatusDELETED{
-    color : red ;
-    text-decoration : line-through
 }
